@@ -25,3 +25,17 @@ exports = {
 ```
 
 In this case, you're reassigning ```exports``` to a new object, breaking the reference with ```module.exports```. So when you require this module, you won't get the object with the foo property; instead, you'll get an empty object. This is because require returns ```module.exports```, not ```exports```.
+
+## The order of the routes in the code
+
+If we have routes like these
+
+```js
+// GET request for creating a Book. NOTE This must come before routes that display Book (uses id).
+router.get("/book/create", book_controller.book_create_get);
+
+// GET request for one Book.
+router.get("/book/:id", book_controller.book_detail);
+```
+
+The route ```/book/create``` must come before ```/book/:id``` because if the ```/book/:id``` comes first, it will matches the ```/book/create"```. But not vice versa

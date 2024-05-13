@@ -6,6 +6,8 @@ const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const catalogRouter = require('./routes/catalog');
+
 const { log } = require('console');
 
 const app = express();
@@ -15,9 +17,11 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 const mongoDB = "";
 
-mongoose.connect(mongoDB)
-.then(() => { console.log('Application connected to DB'); })
-.catch(() => { console.log('Error in connecting to DB'); })
+main().catch((err) => console.log(err));
+async function main() {
+  await mongoose.connect(mongoDB);
+}
+
 
 
 
@@ -33,6 +37,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/catalog', catalogRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
