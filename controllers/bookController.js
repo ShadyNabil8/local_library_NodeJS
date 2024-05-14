@@ -32,7 +32,14 @@ exports.index = asyncHandler(async (req, res, next) => {
 
 // Display list of all books.
 exports.book_list = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book list");
+  // Get books information from DB
+  // Get title and author only. It will also return the _id and virtual fields
+  const allBooks = await Book.find({}, "title author")
+    .sort({ title: 1 })
+    // Populate only first_name and family_namr from author. We Don't need data of birth or death
+    .populate("author", "first_name family_name")
+    .exec();
+  res.render('books', { title: 'book_list', book_list: allBooks });
 });
 
 // Display detail page for a specific book.
