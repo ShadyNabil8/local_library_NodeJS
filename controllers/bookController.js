@@ -1,8 +1,33 @@
 const Book = require("../models/book");
+const Author = require("../models/author");
+const Genre = require("../models/genre");
+const BookInstance = require("../models/bookinstance");
+
 const asyncHandler = require("express-async-handler");
 
 exports.index = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Site Home Page");
+  // Because the queries for document counts are independent of each other
+  // we use Promise.all() to run them in parallel.
+  // The method returns a new promise that we await for completion
+  const [
+    numBooks, numBookInstances, numAvailableBookInstances, numAuthors, numGenres
+  ] = await Promise.all([
+    Book.countDocuments({}).exec(),
+    BookInstance.countDocuments({}).exec(),
+    BookInstance.countDocuments({ status: "Available" }).exec(),
+    Author.countDocuments({}).exec(),
+    Genre.countDocuments({}).exec()
+  ]);
+  res.render('index', {
+    title: 'Local Library Home',
+    book_count: numBooks,
+    book_instance_count: numBookInstances,
+    available_book_instance_count: numAvailableBookInstances,
+    author_count: numAuthors,
+    genre_count: numGenres
+  })
+  // If any of the database operations fail, the exception that is thrown will be caught by asyncHandler()
+  // and passed to the next middleware handler in the chain.
 });
 
 // Display list of all books.
