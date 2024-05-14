@@ -3,7 +3,15 @@ const asyncHandler = require("express-async-handler");
 
 // Display list of all BookInstances.
 exports.bookinstance_list = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: BookInstance list");
+  const allBookInstances = await BookInstance.find({})
+    .populate('book', "title") // Get only the book title
+    .exec();
+
+  res.render('bookinstances', {
+    title: 'All Book Instances',
+    bookinstances_list: allBookInstances
+  });
+
 });
 
 // Display detail page for a specific BookInstance.
@@ -40,3 +48,4 @@ exports.bookinstance_update_get = asyncHandler(async (req, res, next) => {
 exports.bookinstance_update_post = asyncHandler(async (req, res, next) => {
   res.send("NOT IMPLEMENTED: BookInstance update POST");
 });
+
