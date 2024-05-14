@@ -7,7 +7,7 @@ exports.bookinstance_list = asyncHandler(async (req, res, next) => {
     .populate('book', "title") // Get only the book title
     .exec();
 
-  res.render('bookinstances', {
+  res.render('bookinstances_list', {
     title: 'All Book Instances',
     bookinstances_list: allBookInstances
   });
