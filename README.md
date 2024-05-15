@@ -39,3 +39,23 @@ router.get("/book/:id", book_controller.book_detail);
 ```
 
 The route ```/book/create``` must come before ```/book/:id``` because if the ```/book/:id``` comes first, it will matches the ```/book/create"```. But not vice versa
+
+## Making two independent requests
+
+If the two requests do not depend on each other, we use Promise.all() to run the database queries in parallel
+
+uses Promise.all to fetch the genre and its books in parallel, which is more efficient as it reduces the total wait time by running both queries concurrently.
+
+***Not*** efficient code
+```js
+const selectedGenre = await Genre.findById(req.params.id);
+const allbooks = await Book.find({ genre: selectedGenre }, 'title summary').populate('genre')
+```
+
+efficient code
+```js
+const [genre, booksInGenre] = await Promise.all([
+    Genre.findById(req.params.id).exec(),
+    Book.find({ genre: req.params.id }, 'title summary').exec()
+]);
+```
