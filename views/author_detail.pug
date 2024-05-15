@@ -1,0 +1,15 @@
+extends layout 
+
+block content 
+    h1(style='margin-top:20px') Author: #{author.name}
+    p #{author.date_of_birth_formatted} - #{author.date_of_death_formatted}
+    div(style='margin_left:20px;margin_top:20ps')
+        h2(style='font_size:1.5rem') Books 
+        if author_books_list.length 
+            dl
+                each book in author_books_list
+                    dt 
+                        a(href=book.url) #{book.title}
+                    dd #{book.summary}
+        else
+            p There is no books.
