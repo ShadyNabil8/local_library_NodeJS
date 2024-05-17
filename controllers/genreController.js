@@ -48,7 +48,7 @@ exports.genre_create_post = [
     .escape(), // to remove any dangerous HTML characters).
 
   asyncHandler(async (req, res, next) => {
-    const errors = validationResult(req);
+    const errors = validationResult(req);console.log(errors);console.log("====");console.log(errors.array());
     // Create a genre object with escaped and trimmed data.
     const genre = new Genre({ name: req.body.name });
     // There are errors
