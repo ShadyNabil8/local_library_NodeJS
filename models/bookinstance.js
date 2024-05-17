@@ -1,7 +1,7 @@
 // The BookInstance represents a specific copy of a book that someone might borrow
 // and includes information about whether the copy is available,
 // on what date it is expected back, and "imprint" (or version) details.
-const {DateTime} = require("luxon");
+const { DateTime } = require("luxon");
 
 const mongoose = require("mongoose");
 
@@ -25,12 +25,9 @@ BookInstanceSchema.virtual("url").get(function () {
   return `/catalog/bookinstance/${this._id}`;
 });
 
-BookInstanceSchema.virtual("due_back_formatted").get(function () {
-  return DateTime.fromJSDate(this.due_back).toLocaleString(DateTime.DATE_MED);
-});
-
 BookInstanceSchema.virtual('due_back_formatted').get(function () {
-  return this.due_back ? DateTime.fromJSDate(this.due_back).toLocaleString(DateTime.DATE_MED) : '';
+  // format 'YYYY-MM-DD'
+  return this.due_back ? DateTime.fromJSDate(this.due_back).toISODate() : '';
 });
 
 // Export model
