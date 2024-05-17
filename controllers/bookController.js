@@ -94,7 +94,7 @@ exports.book_create_post = [
     }
     next();
   },
-  body('title', 'Title must be nit empty')
+  body('title', 'Title must be not empty')
     .trim()
     .isLength({ min: 1 })
     .escape(),
@@ -139,7 +139,7 @@ exports.book_create_post = [
         authors: allAuthors,
         genres: allGenres,
         book: book,
-        erroer: errors.array(),
+        errors: errors.array(),
       });
     }
     else {

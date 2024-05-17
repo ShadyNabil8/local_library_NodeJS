@@ -42,16 +42,14 @@ exports.author_create_get = asyncHandler(async (req, res, next) => {
 
 // Handle Author create on POST.
 exports.author_create_post = [
-  body("first_name")
+  body("first_name", 'First name must be specified.')
     .trim()
     .isLength({ min: 1 })
-    .escape()
-    .withMessage("First name must be specified."),
-  body("family_name")
+    .escape(),
+  body("family_name", 'Family name must be specified.')
     .trim()
     .isLength({ min: 1 })
-    .escape()
-    .withMessage("Family name must be specified."),
+    .escape(),
   body("date_of_birth", "Invalid date of birth")
     .optional({ values: "falsy" }) // means that we'll accept either an empty string or null as an empty value)
     .isISO8601()
@@ -69,10 +67,10 @@ exports.author_create_post = [
       date_of_death: req.body.date_of_death,
     });
     if (!errors.isEmpty()) {
-      res.render('auther_form', {
+      res.render('author_form', {
         title: 'Author form',
         author: author,
-        erroer: errors.array()
+        errors: errors.array()
       })
     }
     else {
