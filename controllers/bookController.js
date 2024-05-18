@@ -40,7 +40,7 @@ exports.book_list = asyncHandler(async (req, res, next) => {
     // Populate only first_name and family_namr from author. We Don't need data of birth or death
     .populate("author", "first_name family_name")
     .exec();
-  res.render('books', { title: 'book_list', book_list: allBooks });
+  res.render('book_list', { title: 'Book List', book_list: allBooks });
 });
 
 // Display detail page for a specific book.
@@ -152,12 +152,34 @@ exports.book_create_post = [
 
 // Display book delete form on GET.
 exports.book_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book delete GET");
+  const [book, allBookInstances] = await Promise.all([
+    Book.findById(req.params.id, 'title author').populate('author').exec(),
+    BookInstance.find({ book: req.params.id }, 'imprint').exec()
+  ]);
+  res.render('book_delete', {
+    title: 'Delete Book',
+    book: book,
+    book_instances: allBookInstances
+  })
 });
 
 // Handle book delete on POST.
 exports.book_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Book delete POST");
+  const [book, allBookInstances] = await Promise.all([
+    Book.findById(req.params.id, 'title author').populate('author').exec(),
+    BookInstance.find({ book: req.params.id }, 'book imprint').populate('book', 'title').exec()
+  ]);
+  if (allBookInstances.length > 0) {
+    res.render('book_delete', {
+      title: 'Delete Book',
+      book: book,
+      book_instances: allBookInstances
+    });
+  }
+  else {
+    await Book.findByIdAndDelete(req.body.bookid);
+    res.redirect('/catalog/books');
+  }
 });
 
 // Display book update form on GET.
