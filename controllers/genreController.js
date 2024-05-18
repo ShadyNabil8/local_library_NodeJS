@@ -48,7 +48,7 @@ exports.genre_create_post = [
     .escape(), // to remove any dangerous HTML characters).
 
   asyncHandler(async (req, res, next) => {
-    const errors = validationResult(req);console.log(errors);console.log("====");console.log(errors.array());
+    const errors = validationResult(req); console.log(errors); console.log("===="); console.log(errors.array());
     // Create a genre object with escaped and trimmed data.
     const genre = new Genre({ name: req.body.name });
     // There are errors
@@ -78,12 +78,41 @@ exports.genre_create_post = [
 
 // Display Genre delete form on GET.
 exports.genre_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre delete GET");
+  // Get the genre by id and the books associated with it if exists.
+  const [genre, allBooksInGenre] = await Promise.all([
+    Genre.findById(req.params.id).exec(),
+    Book.find({ genre: req.params.id }, 'title summary').exec()
+  ]);
+  if (genre) {
+    res.render('genre_delete', {
+      title: 'Delete Genre',
+      genre: genre,
+      genre_books: allBooksInGenre
+    });
+  }
+  else {
+    res.redirect('/catalog/genres')
+  }
 });
 
 // Handle Genre delete on POST.
 exports.genre_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Genre delete POST");
+  // Get details of genre and all their books (in parallel)
+  const [genre, allBooksInGenre] = await Promise.all([
+    Genre.findById(req.params.id).exec(),
+    Book.find({ genre: req.params.id }, 'title summary').exec()
+  ]);
+  if (allBooksInGenre.length > 0) {
+    res.render('genre_delete', {
+      title: 'Delete Genre',
+      genre: genre,
+      genre_books: allBooksInGenre
+    })
+  }
+  else {
+    await Genre.findByIdAndDelete(req.body.genreid);
+    res.redirect('/catalog/genres')
+  }
 });
 
 // Display Genre update form on GET.
