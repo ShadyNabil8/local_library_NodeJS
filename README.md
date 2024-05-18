@@ -94,4 +94,10 @@ Technically, you can send form data using a GET request, but it's not recommende
 
 When a form is submitted via POST request, the CSRF token is sent along with the request data in ```the body``` of the HTTP request. However, with GET requests, form data is included in the ```URL```, not in the request body. 
 
+## Node.JS Middlewares
+
+The entire idea of middleware is to execute some code before the controller action that sends the response and after the server gets the request from the client.
+
+[How To Use And Write Express Middleware
+](https://blog.webdevsimplified.com/2019-12/express-middleware-in-depth/)
 
