@@ -10,7 +10,7 @@ block content
     if book.genre.length
         span #[strong Genre:] 
         each genre in book.genre
-            a(href=genre.url) #{genre.name}
+            a(href=genre.url) #{genre.name} 
             if index < book.genre.length - 1
                 |,&nbsp;
     else 
@@ -37,3 +37,6 @@ block content
     hr
     p
         a(href=book.url+'/delete') Delete book
+    
+    p
+        a(href=book.url+'/update') Update Book
