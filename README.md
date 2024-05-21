@@ -101,3 +101,21 @@ The entire idea of middleware is to execute some code before the controller acti
 [How To Use And Write Express Middleware
 ](https://blog.webdevsimplified.com/2019-12/express-middleware-in-depth/)
 
+## User Authentication
+The vert basic wqy is to store password in the DB and when using log in check the entered password with the stored one. But the DB in this case is insecure and if an attacker can attack this DB, all accounts are stolen!
+
+We can think of something like hashing. We can hash the password before storing it in the DB. When the user log in, we take the password and hash it and compare it with the hashed one stored in the DB.
+
+Bu the hash finction are knowen. The attacker may create a table of top 5000 passwored used (like 12345 and 88888888..) and hash these passwords to create smoething called rainbow table.
+
+## Rainbow table
+This table is a mab between passwords and the hashed version of these passwords. The process of ccreating the table may take time but it is needed only once. So in the case the DB is no more secure and if the attacker attacks the DB, he can campare the hashed passwords in the DB withthe hashed passwords in the rainbow table.
+
+## Salt
+This make the hashed password unique even if the password is the same, but each time it is hashed will result in a new hashed version. To do this we use something called salt.
+
+Salt is some randomness added to the hash function
+
+```js
+hash_function(salt, password)
+```
