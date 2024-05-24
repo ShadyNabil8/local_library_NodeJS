@@ -1,0 +1,35 @@
+//- doctype html
+//- html
+//-     head
+//-         title Login
+//-         meta(charset='UTF-8')
+//-         meta(name='viewport' content='width=device-width, initial-scale=1.0')
+//-     body
+//-         .container
+//-             h1 Login
+//-             if error
+//-                 .alert.alert-danger #{error}
+//-             form(method='post')
+//-                 .form-group
+//-                     label(for='username') Username
+//-                     input(type='text' name='username' id='username' required class='form-control')
+//-                 .form-group
+//-                     label(for='password') Password
+//-                     input(type='password' name='password' id='password' required class='form-control')
+//-                 button(type='submit' class='btn btn-primary') Login
+//-     a(href='/users/register') Register
+
+html(lang='en-US')
+  head
+    meta(charset='utf-8')
+    title Login
+    link(rel='stylesheet' href='/stylesheets/authStyle.css')
+  body
+    #login
+      form(method='POST')
+        span.fontawesome-user
+        input(type='text' id='user' name='username' placeholder='Username')
+        span.fontawesome-lock
+        input(type='password' id='pass' name='password' placeholder='Password')
+        input(type='submit' value='Login')
+        a(href='/users/register') Don't have account?

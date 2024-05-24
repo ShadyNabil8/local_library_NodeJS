@@ -1,0 +1,18 @@
+html(lang='en-US')
+  head
+    meta(charset='utf-8')
+    title Login
+    link(rel='stylesheet' href='/stylesheets/authStyle.css')
+  body
+    #login
+      form(method='POST')
+        span.fontawesome-user
+        input(type='text' id='user' name='username' placeholder='e.g., shady@gmail.com')
+        span.fontawesome-lock
+        input(type='password' id='pass' name='password' placeholder='Password')
+        input(type='submit' value='Register')
+        a(href='/users/login') Login
+    if errors
+        ul
+            for error in errors
+                li!= error.msg

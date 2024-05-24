@@ -119,3 +119,108 @@ Salt is some randomness added to the hash function
 ```js
 hash_function(salt, password)
 ```
+## Cooki VS Session
+
+**_Note_** Session data is not saved in the cookie itself, just the session ID. Session data is stored server-side.
+
+Since the session is stored on the server, it can store sensitive information. Storing sensitive information in a cookie would be highly insecure.
+
+## JWT VS local
+The main difference is that JWT need not to be stores in a database controlled by the server. It is only stored by the client and when the server need to check (authorize) the client, it regenerate the JWT and compare between the one sent form the client and the one just generated.
+
+The cooki need to be stored somewhare by serve.
+
+This is useful when we have two ore more servers serving our system for load balancing for example. In case of normal cooki, we need to store the session in two places so that each server can get the session independent from the other (Note that using ine database that the two servers use it may not be applicable). But using JWT, the two servers need only to know the secret.
+
+## passport-local strategy
+```passport-local``` is a middleware that modifies an object created by another middleware ```express-session```.
+
+## Some random stuff
+Express know the error handling middleware from the norla middleware by the number of the parameters.
+
+The normal middleware take 3 params ```(req, res, next)```. But the Error handling middleware takes 4 ```(err, req, res, next)```.
+
+Middlewares are chained so that they can be used in order. If there is an error in the 2nd middleware, Express need to populate this error to the error handler middleware. Normaly this middleware is the last one in the chain. But in general, express uses the length property of a function (middleware) to know the number of params. So that it can know the first error handling middleware in the chain.
+
+```js
+app.use(middleware1)
+app.use(middleware2)
+app.use((err,req,res,next)=>{
+  console.log(err.message);
+})
+app.use(middleware3)
+app.use(middleware4)
+app.get('/', ( req, res, next) => {
+
+  res.send(`Hello`);
+});
+function middleware1(req, res, next){
+  console.log('middleware1');
+  next(new Error("error"));
+}
+function middleware2(req, res, next){
+  console.log('middleware2');
+  next();
+}
+function middleware3(req, res, next){
+  console.log('middleware3');
+  next();
+}
+function middleware4(req, res, next){
+  console.log('middleware4');
+  next();
+}
+```
+```
+middleware1
+error
+```
+Hay!, never make something like this
+
+```js
+app.use(middleware1())
+// app.use(middleware1) => right
+```
+## Passport local strategy
+### 1. Login Route:
+```js
+app.use(passport.initialize())
+```
+* We use this middleware to make authentication the first time the user log in or when the cooki of the user is expired.
+
+```js
+app.post('/login', passport.authenticate('local', {
+  successRedirect: '/success',
+  failureRedirect: '/login'
+}));
+```
+
+If successful, ```passport.serializeUser``` stores the ```user ID``` in the session.
+```js
+passport.serializeUser(function(user, done) {
+  done(null, user.id); // Store user ID in the session
+});
+```
+### 2. Subsequent Requests:
+```js
+app.use(passport.session())
+```
+* For each subsequent request, passport.session middleware is invoked.
+* It reads the user ID from the session and calls ```passport.deserializeUser``` to fetch the user object form the store.
+```js
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function (err, user) {
+    done(err, user); // Attach user object to req.user
+  });
+});
+```
+  * The user object is then attached to ```req.user```.
+```js
+app.get('/success', (req, res) => {
+  res.send(`Logged in successfully as ${req.user.username}`);
+});
+
+app.get('/login', (req, res) => {
+  res.send('Login Page');
+});
+```
