@@ -16,16 +16,23 @@ exports.user_register_post = [
         .escape(),
     asyncHandler(async (req, res, next) => {
         const errors = validationResult(req);
-        const newUser = User({
-            username: req.body.username,
-            hash: req.body.password,
-        });
         if (!errors.isEmpty()) {
-            res.render('register', {
+            return res.render('register', {
                 errors: errors.array()
             })
         }
         else {
+            // Check if the username already exist
+            const sameUser = await User.findOne({ username: req.body.username }).exec();
+            if (sameUser) {
+                return res.render('register', {
+                    errors: [{ msg: "Username already used" }]
+                });
+            }
+            const newUser = User({
+                username: req.body.username,
+                hash: req.body.password,
+            });
             await newUser.save();
             res.redirect('/users/login')
         }

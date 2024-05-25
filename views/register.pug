@@ -13,6 +13,6 @@ html(lang='en-US')
         input(type='submit' value='Register')
         a(href='/users/login') Login
     if errors
-        ul
-            for error in errors
-                li!= error.msg
+      ul
+        for error in errors
+          li!= error.msg
