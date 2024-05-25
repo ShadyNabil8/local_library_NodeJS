@@ -4,33 +4,58 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const session = require("express-session");
-// User Authentication
+const debug = require("debug")("app");
 const passport = require("passport");
 const MongoStore = require("connect-mongo");
-const { ensureAuthenticated } = require('./controllers/userController'); // Import the authentication middleware
+const { ensureAuthenticated } = require('./controllers/userController');
+
 require('./config/passport');
-// ---
 require('dotenv').config()
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 const catalogRouter = require('./routes/catalog');
 const userRouter = require('./routes/users');
+
+const compression = require("compression");
 
 const { log } = require('console');
 
 const app = express();
+
+// Set CSP headers to allow our Bootstrap and Jquery to be served
+const helmet = require("helmet");
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      "script-src": ["'self'", "code.jquery.com", "cdn.jsdelivr.net"],
+    },
+  }),
+);
+
+// Set up rate limiter: maximum of twenty requests per minute
+const RateLimit = require("express-rate-limit");
+const limiter = RateLimit({
+  // The command above limits all requests to 20 per minute
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20,
+});
+// Apply rate limiter to all requests
+app.use(limiter);
 
 // Set up mongoose connection
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 const mongoDB = process.env.DB_URL;
 
-main().catch((err) => console.log(err));
+main().catch((err) => {
+  if (err) {
+    debug('Error while connecting to DB');
+  }
+});
 async function main() {
   await mongoose.connect(mongoDB)
     .then(() => {
-      console.log('Server connected to MongoDB');
+      debug('Server connected to DB');
     })
 }
 
@@ -46,6 +71,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(compression()); // Compress all routes
 
 /* 
   * Using session meddleware, session object is added to every req.

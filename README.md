@@ -224,3 +224,75 @@ app.get('/login', (req, res) => {
   res.send('Login Page');
 });
 ```
+## Deploying to production
+### IaaS
+* IaaS: Provides virtualized computing resources over the internet.
+
+|Preinstalled Operating Systems|Fully-Featured Environments|
+|:-:|---|
+|You can choose a virtual machine with an operating system already installed.|Some IaaS vendors offer environments with Node.js and other tools already set up.|
+|Installing Your Production Environment: You need to set up Node.js and other necessary components on the virtual machine after choosing the OS.|   |
+
+## IaaS VS PaaS
+||**IaaS**|**Paas**|
+|---|---|---|
+|**Control and Customization**|Provides more control and customization over the computing environment.|Offers less control but simplifies the development and deployment process.|
+|**Management Responsibility**|You are responsible for managing the virtual machines, including the operating system, updates, patches, and the software stack.|The provider manages the infrastructure, operating system, and middleware.|
+|**Use Cases**|Suitable for applications requiring custom environments, specific configurations, or where you need control over the infrastructure.|Ideal for applications where you want to focus on development without worrying about infrastructure management.|
+
+## Notes about Deploying
+* The main things to think about when publishing your website are ```web security``` and ```performance```.
+
+  At the bare minimum:
+  * you will want to modify the database configuration so that you can use a different database for production and secure its credentials.
+  * Remove the stack traces that are included on error pages during development.
+  * Tidy up your logging, and set the appropriate headers to avoid many common security threats.
+
+## Why Set NODE_ENV to 'production'?
+Setting NODE_ENV to 'production' can significantly boost application performance. As mentioned, it can improve performance by a factor of three, primarily due to the following reasons:
+
+* Reduced overhead from not recompiling templates and static files on every request.
+* Less logging and error handling overhead, resulting in faster response times.
+
+## Compression for responses
+Web servers can often compress the HTTP response sent back to a client, significantly reducing the time required for the client to get and load the page. The compression method used will depend on the decompression methods the client says it supports in the request (the response will be sent uncompressed if no compression methods are supported).
+
+```
+Note: For a high-traffic website in production you wouldn't use this middleware. Instead, you would use a reverse proxy like Nginx.
+```
+## Helmet Middleware
+Helmet is a collection of 15 smaller middleware functions that set HTTP headers to help secure your app. Helmet can protect against some common web vulnerabilities by setting appropriate HTTP headers.
+
+## Content Security Policy (CSP)
+CSP is a security feature that helps prevent a variety of attacks such as Cross-Site Scripting (XSS) and data injection attacks. It works by specifying which sources are allowed to load content on your site.
+
+```js
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      "script-src": ["'self'", "code.jquery.com", "cdn.jsdelivr.net"],
+    },
+  }),
+);
+```
+
+* "script-src":
+
+Specifies valid sources for JavaScript. The values in this array determine which sources are allowed to serve scripts.
+
+## CSP Directives in Detail
+* "'self'":
+
+Allows scripts to be loaded from the same origin as the page. This means any scripts hosted on your own server are permitted.
+
+* "code.jquery.com":
+
+Allows scripts to be loaded from code.jquery.com. This is a common CDN (Content Delivery Network) for jQuery.
+
+* "cdn.jsdelivr.net":
+
+Allows scripts to be loaded from cdn.jsdelivr.net. This is another CDN often used for serving libraries like Bootstrap and other frontend assets.
+
+## Rate limiting to the API routes
+
+Express-rate-limit is a middleware package that can be used to limit repeated requests to APIs and endpoints. There are many reasons why excessive requests might be made to your site, such as denial of service attacks, brute force attacks, or even just a client or script that is not behaving as expected. Aside from performance issues that can arise from too many requests causing your server to slow down, you may also be charged for the additional traffic. This package can be used to limit the number of requests that can be made to a particular route or set of routes.
