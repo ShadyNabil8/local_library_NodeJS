@@ -81,7 +81,7 @@ app.use(compression()); // Compress all routes
 */
 app.use(
   session({
-    secret: "I-killed-Mufasa", // It should be more complex than that!!!
+    secret: process.env.secret, // It should be more complex than that!!!
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({

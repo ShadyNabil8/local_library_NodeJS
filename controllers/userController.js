@@ -42,17 +42,27 @@ exports.user_register_post = [
 exports.user_login_get = asyncHandler(async (req, res, next) => {
     res.render('login')
 });
-exports.user_login_post = [
+exports.user_login_post = asyncHandler(async (req, res, next) => {
     // After authentication, passport: { user: 'some id' } is added to session object in req
-    passport.authenticate('local', {
-        failureRedirect: '/users/login',
-    }),
-    (req, res, next) => {
-        // Redirect to the originally requested URL or default to /catalog
-        const redirectTo = req.query.redirect || '/catalog';
-        res.redirect(redirectTo);
-    }
-]
+    passport.authenticate('local', (err, user, info) => {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            return res.status(400).render('login', { errors: [{ msg: info.message }] })
+        }
+        // When a user successfully logs in, Passport.js serializes the user information into the session.
+        req.logIn(user, (err) => {
+            if (err) {
+                return next(err);
+            }
+            const redirectTo = req.query.redirect || '/catalog';
+            res.redirect(redirectTo);
+        });
+    })(req, res, next); // Invoke the middleware function with req, res, next
+})
+
+
 
 module.exports.ensureAuthenticated = function (req, res, next) {
     if (req.path === '/users/login' || req.path === '/users/register')

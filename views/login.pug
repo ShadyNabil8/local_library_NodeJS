@@ -33,3 +33,7 @@ html(lang='en-US')
         input(type='password' id='pass' name='password' placeholder='Password')
         input(type='submit' value='Login')
         a(href='/users/register') Don't have account?
+    if errors
+      ul
+        for error in errors
+          li!= error.msg

@@ -11,13 +11,13 @@ passport.use(
             User.findOne({ username: username })
                 .then((user) => {
                     if (!user) {
-                        return done(null, false);
+                        return done(null, false, { message: 'User not found' });
                     }
                     const isValid = user.validatePassword(password);
                     if (isValid) {
                         return done(null, user);
                     } else {
-                        return done(null, false);
+                        return done(null, false, { message: 'Incorrect password' });
                     }
                 })
                 .catch((err) => {
