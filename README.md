@@ -1,4 +1,4 @@
-# Deom
+# Demo
 
 ![Demo](./Project.gif)
 
