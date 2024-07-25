@@ -1,3 +1,7 @@
+# Deom
+
+![Demo](./Project.gif)
+
 # I have learned these:
 
 These will be some notes that I faced while developing this project
